@@ -1,3 +1,10 @@
+function todos(state = [], action) {
+  if (action.type === 'ADD_TODO') {
+    return state.concat([action.todo])
+  }
+  return state
+}
+
 function createStore() {
   // The store should have four parts
   // 1. The store
@@ -12,11 +19,20 @@ function createStore() {
 
   const subscribe = (listener) => {
     listeners.push(listener)
+    return () => {
+      listeners = listernes.filter((l) => l !== listener)
+    }
+  }
+
+  const dispatch = (action) => {
+    state = todos(state, action)
+    listeners.forEach((listener) => listener())
   }
 
   return {
     getState,
-    subscribe
+    subscribe,
+    dispatch
   }
 }
 
@@ -25,6 +41,6 @@ store.subscribe(() => {
   console.log('The new state is: ', store.getState())
 })
 
-store.subscribe(() => {
+const unsubscribe = store.subscribe(() => {
   console.log('The store changed.')
 })
